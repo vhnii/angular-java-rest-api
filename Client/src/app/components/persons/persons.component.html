@@ -1,0 +1,11 @@
+<div class="container">
+    <p *ngIf="persons.length === 0">Pole midagi kuvada. Lisa isik või ühenda andmebaas.</p>
+    <div *ngIf="persons.length > 0">
+        <ul class="item-list" *ngFor="let person of persons">
+            <li class="item">
+                <p>{{person.firstName}} {{person.lastName}}</p>
+                <span>{{person.address}}</span>
+            </li>
+        </ul>
+    </div>
+</div>

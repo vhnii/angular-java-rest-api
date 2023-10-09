@@ -1,0 +1,16 @@
+<div class="container">
+    <form (ngSubmit)="onSubmit()">
+        <div class="form-control">
+            <input type="text" placeholder="Nimi" name="fname" [(ngModel)]="fname">
+        </div>
+        <div class="form-control">
+            <input type="text" placeholder="Perenimi" name="lname" [(ngModel)]="lname">
+        </div>
+        <div class="form-control">
+            <div id="InAddressDiv"></div>
+        </div>
+        <div class="form-control">
+            <input class="btn" type="submit" value="Salvesta">
+        </div>
+    </form>
+</div>
