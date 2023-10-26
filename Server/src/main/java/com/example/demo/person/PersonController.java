@@ -2,6 +2,7 @@ package com.example.demo.person;
 
 import java.util.List;
 
+import org.hibernate.mapping.Any;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,11 +13,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.util.CustomResponse;
+import com.example.demo.util.Message;
+
 
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:4200")
+// @CrossOrigin()
+// @CrossOrigin(origins = "http://localhost:4200")
 public class PersonController {
 
     @Autowired
@@ -24,21 +29,29 @@ public class PersonController {
 
 
     @GetMapping("/persons")
-
     public List<Person> getAllPersons() {
         return personService.getAllPersons();
     }
 
 
-    @PostMapping("/person")
-    public ResponseEntity<String> addPerson(@RequestBody Person person) {
+
+
+    @PostMapping(value = "/person", produces = "application/json")
+    public ResponseEntity<CustomResponse<Person>> addPerson(@RequestBody Person person) {
         try {
-            personService.addPerson(person);
-            return ResponseEntity.ok("Person created successfully.");
+            Person savedPerson = personService.addPerson(person);
+            // CustomResponse<Person> response = new CustomResponse<>(savedPerson, HttpStatus.OK.value(), "Person created successfully.");
+            Message message = new Message("Person created successfully.");
+            CustomResponse<Person> response = new CustomResponse<>(savedPerson, HttpStatus.OK.value(), message);
+            return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            Message message = new Message(e.getMessage());
+            CustomResponse<Person> response = new CustomResponse<>(null, HttpStatus.BAD_REQUEST.value(), message);
+            return ResponseEntity.badRequest().body(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create Person.");
+            Message message = new Message("Failed to create Person");
+            CustomResponse<Person> response = new CustomResponse<>(null, HttpStatus.INTERNAL_SERVER_ERROR.value(), message);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 }
