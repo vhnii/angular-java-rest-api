@@ -107,7 +107,7 @@ class PersonTests {
     List<Person> responsePersons = response.jsonPath().getList("", Person.class);
 
     for (Person person : responsePersons) {
-        assertTrue(Character.isUpperCase((person.getLastName()).charAt(0)), "Last name should be capitalized for " + " '" + person.getLastName() + "' ");
+        assertTrue(Character.isUpperCase((person.getLastName()).charAt(0)), "Family name must be capitalized for " + " '" + person.getLastName() + "' ");
     }
   }
 }
