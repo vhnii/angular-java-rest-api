@@ -22,6 +22,11 @@ public class PersonService {
         if (person.getFirstName() == null || person.getLastName() == null || person.getAddress() == null) {
             throw new IllegalArgumentException("First name, last name and address are required.");
         }
+
+        if (!Character.isUpperCase(person.getLastName().charAt(0))) {
+            throw new IllegalArgumentException("Last name must be capitalized.");
+        }
+
         return personRepository.save(person);
     }
 }

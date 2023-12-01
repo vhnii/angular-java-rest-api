@@ -2,6 +2,9 @@ package com.example.demo;
 
 import com.example.demo.person.Person;
 import com.example.demo.person.PersonRepository;
+
+import jakarta.servlet.ServletException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +13,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
 import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.assertj.core.api.Assertions.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -40,17 +48,16 @@ class PersonTests {
 
     @Test
     void shouldInsertIntoPersonsAndCheckIfSavedToDB() throws Exception {
-        Person person = new Person("Uku", "Juku", "Turu tn 1, Tartu");
 
         mockMvc.perform(MockMvcRequestBuilders
               .post("/api/person")
               .contentType("application/json")
-              .content("{\"firstName\":\"Uku\",\"lastName\":\"Juku\",\"address\":\"Turu tn 1, Tartu\"}"))
+              .content("{\"firstName\":\"Uku\",\"lastName\":\"Juku\",\"address\":\"Turu tn 5, Tartu\"}"))
               .andExpect(MockMvcResultMatchers.status().isOk())
               .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
               .andExpect(jsonPath("$.firstName").value("Uku"))
               .andExpect(jsonPath("$.lastName").value("Juku"))
-              .andExpect(jsonPath("$.address").value("Turu tn 1, Tartu"));
+              .andExpect(jsonPath("$.address").value("Turu tn 5, Tartu"));
     }
 
     @Test
@@ -62,14 +69,20 @@ class PersonTests {
               .andExpect(jsonPath("$.length()").isNotEmpty());
     }
 
+
     @Test
-    void shouldFailIfLastNameNotCapitalized() {
-        List<Person> responsePersons = personRepository.findAll();
+    void shouldFailIfInsertingNotCapitalizedLastName() throws Exception{
 
-        for (Person person : responsePersons) {
-
-          assertThat(Character.isUpperCase(person.getLastName().charAt(0)))
-                .withFailMessage("Family name must be capitalized for '" + person.getLastName() + "'").isTrue();
-        }
+        assertThrows(ServletException.class, () -> {
+            mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/person")
+                .contentType("application/json")
+                .content("{\"firstName\":\"Uku\",\"lastName\":\"tuku\",\"address\":\"Turu tn 1, Tartu\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> {
+                    assertTrue(result.getResolvedException() instanceof IllegalArgumentException);
+                    assertEquals("Last name must be capitalized.", result.getResolvedException().getMessage());
+                });
+        });
     }
 }

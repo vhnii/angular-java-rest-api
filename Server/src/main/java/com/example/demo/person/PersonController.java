@@ -35,7 +35,7 @@ public class PersonController {
             personService.addPerson(person);
             return ResponseEntity.ok(person);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            throw new IllegalArgumentException(e);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create Person.");
         }

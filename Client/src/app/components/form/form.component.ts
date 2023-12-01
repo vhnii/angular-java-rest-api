@@ -37,12 +37,13 @@ export class FormComponent implements OnInit {
     }
 
     
-    // POST REQUEST
-    this.personService.addPersons(newPerson).subscribe();
+    this.personService.addPersons(newPerson).subscribe({
+      error: (err) => alert(err)
+    });
     
-    // Tühjendame ära aadressite loendi 
+    // Tühjendame ära aadressite loendi
     this.clearFormInputs();
-  }
+}
 
   
   public getAddressInput(): void {

@@ -28,16 +28,19 @@ export class PersonService {
 
   
   getPersons(): Observable<Person[]> {
-    return this.http.get<Person[]>(`${environment.apiUrl}/persons`)
+    return this.http.get<Person[]>(`http://localhost:8080/api/persons`)
       .pipe(
         catchError(this.handleError<Person[]>('getPersons', []))
       );
   }
 
   addPersons(person: Person): Observable<Person> {
+
     return this.http.post<Person>(`${environment.apiUrl}/person`, person, this.httpOptions)
     .pipe(
-      catchError(this.handleError<Person>('addPerson'))
+      catchError((error: any) => {
+          throw new Error('Failed to add Person.');
+      })
     );
   }
 }
